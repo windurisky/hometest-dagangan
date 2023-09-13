@@ -7,4 +7,5 @@ type FareConfiguration struct {
 
 type FareConfigurationUsecase interface {
 	GetList(string) ([]FareConfiguration, error)
+	FindByMileage(int64) (FareConfiguration, error)
 }
