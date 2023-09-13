@@ -6,5 +6,5 @@ type FareConfiguration struct {
 }
 
 type FareConfigurationUsecase interface {
-	GetList() ([]FareConfiguration, error)
+	GetList(string) ([]FareConfiguration, error)
 }

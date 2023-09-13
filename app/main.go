@@ -1,7 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"path/filepath"
+
+	_fareConfigurationUsecase "github.com/windurisky/hometest-dagangan/fare_configuration/usecase"
+)
 
 func main() {
-	fmt.Println("Test")
+	relativePath := "fare_configuration/fixtures/fare_configuration.json"
+	absolutePath, _ := filepath.Abs(relativePath)
+	fmt.Println(_fareConfigurationUsecase.NewFareConfigurationUsecase().GetList(absolutePath))
 }
