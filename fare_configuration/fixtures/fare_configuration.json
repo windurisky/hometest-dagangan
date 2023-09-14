@@ -1,0 +1,14 @@
+[
+    {
+        "upper_limit": 1,
+        "fare_per_mileage": 1000
+    },
+    {
+        "upper_limit": 10,
+        "fare_per_mileage": 1500
+    },
+    {
+        "upper_limit": 100,
+        "fare_per_mileage": 2000
+    }
+]

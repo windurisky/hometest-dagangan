@@ -5,10 +5,10 @@ import "time"
 type Trip struct {
 	Location   string
 	Duration   time.Duration
-	Mileage    int64
-	FareAmount *int64
+	Mileage    uint64
+	FareAmount *uint64
 }
 
 type TripUsecase interface {
-	CalculateFare(trip *Trip) error
+	CalculateFare(uint64) (uint64, error)
 }
