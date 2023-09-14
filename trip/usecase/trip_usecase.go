@@ -14,14 +14,17 @@ func NewTripUsecase(fc domain.FareConfigurationUsecase) domain.TripUsecase {
 	}
 }
 
-func (t *tripUsecase) CalculateFare(trip *domain.Trip) (err error) {
-	fareConfig, err := t.fareConfigurationUsecase.FindByMileage(trip.Mileage)
+func (t *tripUsecase) CalculateFare(mileage uint64) (result uint64, err error) {
+	if mileage == 0 {
+		return 0, err
+	}
+
+	fareConfig, err := t.fareConfigurationUsecase.FindByMileage(mileage)
 	if err != nil {
 		return
 	}
 
-	fareAmount := fareConfig.FarePerMileage * trip.Mileage
-	trip.FareAmount = &fareAmount
+	result = fareConfig.FarePerMileage * mileage
 
 	return
 }

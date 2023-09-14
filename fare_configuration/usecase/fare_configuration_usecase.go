@@ -38,10 +38,13 @@ func (fc *fareConfigurationUsecase) GetList(fixturePath string) (result []domain
 	return
 }
 
-func (fc *fareConfigurationUsecase) FindByMileage(mileage int64) (result domain.FareConfiguration, err error) {
+func (fc *fareConfigurationUsecase) FindByMileage(mileage uint64) (result domain.FareConfiguration, err error) {
 	relativePath := "fare_configuration/fixtures/fare_configuration.json"
 	absolutePath, _ := filepath.Abs(relativePath)
 	fareConfigurations, err := fc.GetList(absolutePath)
+	if err != nil {
+		return
+	}
 
 	for _, config := range fareConfigurations {
 		if config.UpperLimit >= mileage {
