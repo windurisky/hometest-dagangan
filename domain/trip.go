@@ -10,5 +10,6 @@ type Trip struct {
 }
 
 type TripUsecase interface {
+	ParseInput(string) (Trip, error)
 	CalculateFare(uint64) (uint64, error)
 }

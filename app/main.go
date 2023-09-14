@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/windurisky/hometest-dagangan/domain"
 	_fareConfigurationRepository "github.com/windurisky/hometest-dagangan/fare_configuration/repository"
 	_fareConfigurationUsecase "github.com/windurisky/hometest-dagangan/fare_configuration/usecase"
 	_tripUsecase "github.com/windurisky/hometest-dagangan/trip/usecase"
@@ -12,22 +11,11 @@ import (
 
 func main() {
 	// TODO: make it into user input assigned values, create a input parser as well
-	sampleTrips := []domain.Trip{
-		{
-			Location: "PointA",
-			Duration: time.Duration(80) * time.Minute,
-			Mileage:  2,
-		},
-		{
-			Location: "PointB",
-			Duration: time.Duration(3500) * time.Second,
-			Mileage:  11,
-		},
-		{
-			Location: "Pointc",
-			Duration: time.Duration(1500) * time.Second,
-			Mileage:  0,
-		},
+
+	sampleTrips := []string{
+		"PointA 01:20:05.500 2",
+		"PointB 00:58:05.500 11",
+		"PointC 00:25:00.000 0",
 	}
 
 	fareConfigurationRepo := _fareConfigurationRepository.NewFareConfigurationRepository()
@@ -38,12 +26,20 @@ func main() {
 	var totalFareAmount uint64 = 0
 	var totalDuration time.Duration = time.Duration(0)
 
-	for _, trip := range sampleTrips {
+	for _, tripString := range sampleTrips {
+		trip, err := tripUsecase.ParseInput(tripString)
+		if err != nil {
+			fmt.Println("Error:", err)
+			break
+		}
+
 		fareAmount, err := tripUsecase.CalculateFare(trip.Mileage)
 		if err != nil {
 			// TODO: add logging here
 			fmt.Println("Error:", err)
+			break
 		}
+
 		trip.FareAmount = &fareAmount
 		fmt.Println(trip.Location, trip.Duration, trip.Mileage, *trip.FareAmount)
 
