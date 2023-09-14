@@ -17,11 +17,12 @@ func NewFareConfigurationUsecase() domain.FareConfigurationUsecase {
 }
 
 func (fc *fareConfigurationUsecase) GetList(fixturePath string) (result []domain.FareConfiguration, err error) {
-	// on real life use cases, this will probably be in a database
+	// on real life use cases, the data will most likely be in a database
 	// in that case, it will call something like fareConfigurationRepository.GetList()
 	// for demo purpose, changing the json fixture as needed will suffice
 	file, err := os.Open(fixturePath)
 	if err != nil {
+		// TODO: change with logging
 		fmt.Println("Error opening JSON file:", err)
 		return
 	}
@@ -29,6 +30,7 @@ func (fc *fareConfigurationUsecase) GetList(fixturePath string) (result []domain
 
 	decoder := json.NewDecoder(file)
 	if err = decoder.Decode(&result); err != nil {
+		// TODO: change with logging
 		fmt.Println("Error decoding JSON:", err)
 		return
 	}
@@ -49,6 +51,7 @@ func (fc *fareConfigurationUsecase) FindByMileage(mileage int64) (result domain.
 	}
 
 	if result == (domain.FareConfiguration{}) {
+		// TODO: error message library
 		err = errors.New("fare fonfiguration not found")
 	}
 	return

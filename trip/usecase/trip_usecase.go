@@ -20,6 +20,8 @@ func (t *tripUsecase) CalculateFare(trip *domain.Trip) (err error) {
 		return
 	}
 
-	*trip.FareAmount = fareConfig.FarePerMileage * trip.Mileage
+	fareAmount := fareConfig.FarePerMileage * trip.Mileage
+	trip.FareAmount = &fareAmount
+
 	return
 }
