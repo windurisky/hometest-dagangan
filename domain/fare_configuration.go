@@ -6,6 +6,9 @@ type FareConfiguration struct {
 }
 
 type FareConfigurationUsecase interface {
-	GetList(string) ([]FareConfiguration, error)
 	FindByMileage(uint64) (FareConfiguration, error)
+}
+
+type FareConfigurationRepository interface {
+	GetAll(string) ([]FareConfiguration, error)
 }

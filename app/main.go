@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/windurisky/hometest-dagangan/domain"
+	_fareConfigurationRepository "github.com/windurisky/hometest-dagangan/fare_configuration/repository"
 	_fareConfigurationUsecase "github.com/windurisky/hometest-dagangan/fare_configuration/usecase"
 	_tripUsecase "github.com/windurisky/hometest-dagangan/trip/usecase"
 )
@@ -29,8 +30,10 @@ func main() {
 		},
 	}
 
-	fareConfigurationUsecase := _fareConfigurationUsecase.NewFareConfigurationUsecase()
+	fareConfigurationRepo := _fareConfigurationRepository.NewFareConfigurationRepository()
+	fareConfigurationUsecase := _fareConfigurationUsecase.NewFareConfigurationUsecase(fareConfigurationRepo)
 	tripUsecase := _tripUsecase.NewTripUsecase(fareConfigurationUsecase)
+
 	var totalMileAge uint64 = 0
 	var totalFareAmount uint64 = 0
 	var totalDuration time.Duration = time.Duration(0)
@@ -48,6 +51,7 @@ func main() {
 		totalFareAmount += fareAmount
 		totalDuration += trip.Duration
 	}
+
 	fmt.Println("Total Mileage:", totalMileAge)
 	fmt.Println("Total Fare Amount:", totalFareAmount)
 	fmt.Println("Total Duration", totalDuration)
