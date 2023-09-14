@@ -1,54 +1,61 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
-	"time"
+	"os"
+	"strconv"
 
+	"github.com/windurisky/hometest-dagangan/domain"
 	_fareConfigurationRepository "github.com/windurisky/hometest-dagangan/fare_configuration/repository"
 	_fareConfigurationUsecase "github.com/windurisky/hometest-dagangan/fare_configuration/usecase"
+	_tripHandler "github.com/windurisky/hometest-dagangan/trip/delivery/cmd"
 	_tripUsecase "github.com/windurisky/hometest-dagangan/trip/usecase"
 )
 
 func main() {
-	// TODO: make it into user input assigned values, create a input parser as well
-
-	sampleTrips := []string{
-		"PointA 01:20:05.500 2",
-		"PointB 00:58:05.500 11",
-		"PointC 00:25:00.000 0",
-	}
-
 	fareConfigurationRepo := _fareConfigurationRepository.NewFareConfigurationRepository()
 	fareConfigurationUsecase := _fareConfigurationUsecase.NewFareConfigurationUsecase(fareConfigurationRepo)
 	tripUsecase := _tripUsecase.NewTripUsecase(fareConfigurationUsecase)
+	tripHandler := _tripHandler.NewTripHandler(tripUsecase)
 
-	var totalMileAge uint64 = 0
-	var totalFareAmount uint64 = 0
-	var totalDuration time.Duration = time.Duration(0)
+	var input string
 
-	for _, tripString := range sampleTrips {
-		trip, err := tripUsecase.ParseInput(tripString)
-		if err != nil {
-			fmt.Println("Error:", err)
-			break
-		}
-
-		fareAmount, err := tripUsecase.CalculateFare(trip.Mileage)
-		if err != nil {
-			// TODO: add logging here
-			fmt.Println("Error:", err)
-			break
-		}
-
-		trip.FareAmount = &fareAmount
-		fmt.Println(trip.Location, trip.Duration, trip.Mileage, *trip.FareAmount)
-
-		totalMileAge += trip.Mileage
-		totalFareAmount += fareAmount
-		totalDuration += trip.Duration
+	fmt.Print("Enter number of trips: ")
+	_, err := fmt.Scanln(&input)
+	if err != nil {
+		fmt.Println("Error reading input:", err)
+		return
 	}
 
-	fmt.Println("Total Mileage:", totalMileAge)
-	fmt.Println("Total Fare Amount:", totalFareAmount)
-	fmt.Println("Total Duration", totalDuration)
+	tripLength, err := strconv.Atoi(input)
+	if err != nil {
+		fmt.Println("Error reading input:", err)
+		return
+	}
+
+	var trips []domain.Trip
+	scanner := bufio.NewScanner(os.Stdin)
+	for i := 0; i < tripLength; i++ {
+		fmt.Printf("Enter trip %d: ", i+1)
+		if scanner.Scan() {
+			input = scanner.Text()
+		} else {
+			fmt.Println("Error reading input:", scanner.Err())
+			return
+		}
+
+		trip, err := tripHandler.ParseInput(input)
+		if err != nil {
+			fmt.Println("Error reading input:", err)
+			return
+		}
+
+		trips = append(trips, trip)
+	}
+
+	err = tripHandler.SummarizeTrip(trips)
+	if err != nil {
+		fmt.Println("Error processing data:", err)
+	}
 }
