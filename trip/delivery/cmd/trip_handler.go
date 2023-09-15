@@ -62,11 +62,12 @@ func (t *tripHandler) stringToDuration(input string) (result time.Duration, err 
 		time.Duration(seconds)*time.Second +
 		time.Duration(milliseconds)*time.Millisecond
 
+	// TODO: put in env
 	lowerLimit := 2 * time.Minute
 	upperLimit := 10 * time.Minute
 
-	if result < lowerLimit && result > upperLimit {
-		// TODO: still fail, the condition does not go here, check later
+	if result < lowerLimit || result > upperLimit {
+
 		err = errors.New("duration must be between 2 to 10 minutes")
 		// TODO: add logging here
 	}
