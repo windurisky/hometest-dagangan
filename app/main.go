@@ -9,27 +9,35 @@ import (
 	"github.com/windurisky/hometest-dagangan/domain"
 	_fareConfigurationRepository "github.com/windurisky/hometest-dagangan/fare_configuration/repository"
 	_fareConfigurationUsecase "github.com/windurisky/hometest-dagangan/fare_configuration/usecase"
+	"github.com/windurisky/hometest-dagangan/logger"
 	_tripHandler "github.com/windurisky/hometest-dagangan/trip/delivery/cmd"
 	_tripUsecase "github.com/windurisky/hometest-dagangan/trip/usecase"
 )
 
 func main() {
-	fareConfigurationRepo := _fareConfigurationRepository.NewFareConfigurationRepository()
-	fareConfigurationUsecase := _fareConfigurationUsecase.NewFareConfigurationUsecase(fareConfigurationRepo)
-	tripUsecase := _tripUsecase.NewTripUsecase(fareConfigurationUsecase)
-	tripHandler := _tripHandler.NewTripHandler(tripUsecase)
+	logger, err := logger.NewZapLogger()
+	if err != nil {
+		panic(err)
+	}
+
+	fareConfigurationRepo := _fareConfigurationRepository.NewFareConfigurationRepository(logger)
+	fareConfigurationUsecase := _fareConfigurationUsecase.NewFareConfigurationUsecase(logger, fareConfigurationRepo)
+	tripUsecase := _tripUsecase.NewTripUsecase(logger, fareConfigurationUsecase)
+	tripHandler := _tripHandler.NewTripHandler(logger, tripUsecase)
 
 	var input string
 
 	fmt.Print("Enter number of trips: ")
-	_, err := fmt.Scanln(&input)
+	_, err = fmt.Scanln(&input)
 	if err != nil {
+		logger.Error(err.Error())
 		fmt.Println("Error reading input:", err)
 		return
 	}
 
 	tripLength, err := strconv.Atoi(input)
 	if err != nil {
+		logger.Error(err.Error())
 		fmt.Println("Error reading input:", err)
 		return
 	}

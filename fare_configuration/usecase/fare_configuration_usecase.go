@@ -1,18 +1,20 @@
 package usecase
 
 import (
-	"errors"
 	"path/filepath"
 
 	"github.com/windurisky/hometest-dagangan/domain"
+	"github.com/windurisky/hometest-dagangan/logger"
 )
 
 type fareConfigurationUsecase struct {
+	logger                logger.Logger
 	fareConfigurationRepo domain.FareConfigurationRepository
 }
 
-func NewFareConfigurationUsecase(fcRepo domain.FareConfigurationRepository) domain.FareConfigurationUsecase {
+func NewFareConfigurationUsecase(logger logger.Logger, fcRepo domain.FareConfigurationRepository) domain.FareConfigurationUsecase {
 	return &fareConfigurationUsecase{
+		logger:                logger,
 		fareConfigurationRepo: fcRepo,
 	}
 }
@@ -28,13 +30,13 @@ func (fc *fareConfigurationUsecase) FindByMileage(mileage uint64) (result domain
 	for _, config := range fareConfigurations {
 		if config.UpperLimit >= mileage {
 			result = config
-			break
+			return
 		}
 	}
 
 	if result == (domain.FareConfiguration{}) {
-		// TODO: error message library
-		err = errors.New("fare fonfiguration not found")
+		err = domain.ErrFareConfigurationNotFound
+		fc.logger.Error(err.Error())
 	}
 	return
 }
