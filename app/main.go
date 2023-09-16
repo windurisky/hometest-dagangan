@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/joho/godotenv"
 	"github.com/windurisky/hometest-dagangan/domain"
 	_fareConfigurationRepository "github.com/windurisky/hometest-dagangan/fare_configuration/repository"
 	_fareConfigurationUsecase "github.com/windurisky/hometest-dagangan/fare_configuration/usecase"
@@ -17,6 +18,10 @@ import (
 func main() {
 	logger, err := logger.NewZapLogger()
 	if err != nil {
+		panic(err)
+	}
+
+	if err := godotenv.Load(); err != nil {
 		panic(err)
 	}
 
