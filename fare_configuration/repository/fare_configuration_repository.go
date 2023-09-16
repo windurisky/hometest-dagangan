@@ -2,16 +2,20 @@ package repository
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 
 	"github.com/windurisky/hometest-dagangan/domain"
+	"github.com/windurisky/hometest-dagangan/logger"
 )
 
-type fareConfigurationRepository struct{}
+type fareConfigurationRepository struct {
+	logger logger.Logger
+}
 
-func NewFareConfigurationRepository() domain.FareConfigurationRepository {
-	return &fareConfigurationRepository{}
+func NewFareConfigurationRepository(logger logger.Logger) domain.FareConfigurationRepository {
+	return &fareConfigurationRepository{
+		logger: logger,
+	}
 }
 
 func (fc *fareConfigurationRepository) GetAll(fixturePath string) (result []domain.FareConfiguration, err error) {
@@ -19,16 +23,14 @@ func (fc *fareConfigurationRepository) GetAll(fixturePath string) (result []doma
 	// for demo purpose, changing the json fixture as needed will suffice
 	file, err := os.Open(fixturePath)
 	if err != nil {
-		// TODO: change with logging
-		fmt.Println("Error opening JSON file:", err)
+		fc.logger.Error(err.Error())
 		return
 	}
 	defer file.Close()
 
 	decoder := json.NewDecoder(file)
 	if err = decoder.Decode(&result); err != nil {
-		// TODO: change with logging
-		fmt.Println("Error decoding JSON:", err)
+		fc.logger.Error(err.Error())
 		return
 	}
 
