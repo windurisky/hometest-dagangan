@@ -8,6 +8,7 @@ import (
 
 	"github.com/windurisky/hometest-dagangan/domain"
 	"github.com/windurisky/hometest-dagangan/logger"
+	"github.com/windurisky/hometest-dagangan/util"
 )
 
 type tripHandler struct {
@@ -22,8 +23,8 @@ func NewTripHandler(logger logger.Logger, tripUsecase domain.TripUsecase) domain
 	}
 }
 
+// stringToDuration will convert string with hh:mm:ss.fff format into time.Duration
 func (t *tripHandler) stringToDuration(input string) (result time.Duration, err error) {
-	// input string format must be hh:mm:ss.fff
 	durationParts := strings.Split(input, ":")
 	if len(durationParts) != 3 {
 		err = domain.ErrInvalidDurationFormat
@@ -82,19 +83,31 @@ func (t *tripHandler) stringToDuration(input string) (result time.Duration, err 
 		time.Duration(seconds)*time.Second +
 		time.Duration(milliseconds)*time.Millisecond
 
-	// TODO: put in env
-	lowerLimit := 2 * time.Minute
-	upperLimit := 10 * time.Minute
+	lowerLimit, err := strconv.Atoi(util.GetEnvWithDefault("DURATION_UPPER_LIMIT_MINUTES", "2"))
+	if err != nil {
+		t.logger.Error(err.Error())
+		return
+	}
 
-	if result < lowerLimit || result > upperLimit {
+	lowerLimitDuration := time.Duration(lowerLimit) * time.Minute
+
+	upperLimit, err := strconv.Atoi(util.GetEnvWithDefault("DURATION_LOWER_LIMIT_MINUTES", "10"))
+	if err != nil {
+		t.logger.Error(err.Error())
+		return
+	}
+
+	upperLimitDuration := time.Duration(upperLimit) * time.Minute
+
+	if result < lowerLimitDuration || result > upperLimitDuration {
 		err = domain.ErrInvalidDurationRange
 		t.logger.Error(err.Error())
 	}
 	return
 }
 
+// durationToString converts time.Duration into hh:mm:ss.fff string format
 func (t *tripHandler) durationToString(input time.Duration) (result string) {
-	// output string format will be hh:mm:ss.fff
 	hours := input / time.Hour
 	input -= hours * time.Hour
 
