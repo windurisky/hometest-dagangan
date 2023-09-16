@@ -30,12 +30,14 @@ func main() {
 	fmt.Print("Enter number of trips: ")
 	_, err = fmt.Scanln(&input)
 	if err != nil {
+		logger.Error(err.Error())
 		fmt.Println("Error reading input:", err)
 		return
 	}
 
 	tripLength, err := strconv.Atoi(input)
 	if err != nil {
+		logger.Error(err.Error())
 		fmt.Println("Error reading input:", err)
 		return
 	}
