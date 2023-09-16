@@ -15,15 +15,15 @@ import (
 )
 
 func main() {
-	zapLogger, err := logger.NewZapLogger()
+	logger, err := logger.NewZapLogger()
 	if err != nil {
 		panic(err)
 	}
 
-	fareConfigurationRepo := _fareConfigurationRepository.NewFareConfigurationRepository(zapLogger)
-	fareConfigurationUsecase := _fareConfigurationUsecase.NewFareConfigurationUsecase(zapLogger, fareConfigurationRepo)
-	tripUsecase := _tripUsecase.NewTripUsecase(zapLogger, fareConfigurationUsecase)
-	tripHandler := _tripHandler.NewTripHandler(zapLogger, tripUsecase)
+	fareConfigurationRepo := _fareConfigurationRepository.NewFareConfigurationRepository(logger)
+	fareConfigurationUsecase := _fareConfigurationUsecase.NewFareConfigurationUsecase(logger, fareConfigurationRepo)
+	tripUsecase := _tripUsecase.NewTripUsecase(logger, fareConfigurationUsecase)
+	tripHandler := _tripHandler.NewTripHandler(logger, tripUsecase)
 
 	var input string
 
