@@ -42,6 +42,11 @@ func (t *tripHandler) stringToDuration(input string) (result time.Duration, err 
 		t.logger.Error(err.Error())
 		return
 	}
+	if minutes > 59 {
+		err = domain.ErrInvalidMinutes
+		t.logger.Error(err.Error())
+		return
+	}
 
 	secondsParts := strings.Split(durationParts[2], ".")
 	if len(secondsParts) != 2 {
@@ -55,9 +60,19 @@ func (t *tripHandler) stringToDuration(input string) (result time.Duration, err 
 		t.logger.Error(err.Error())
 		return
 	}
+	if seconds > 59 {
+		err = domain.ErrInvalidSeconds
+		t.logger.Error(err.Error())
+		return
+	}
 
 	milliseconds, err := strconv.Atoi(secondsParts[1])
 	if err != nil {
+		t.logger.Error(err.Error())
+		return
+	}
+	if milliseconds > 999 {
+		err = domain.ErrInvalidMilliseconds
 		t.logger.Error(err.Error())
 		return
 	}
