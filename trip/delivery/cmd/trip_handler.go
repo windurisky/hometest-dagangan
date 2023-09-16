@@ -122,6 +122,7 @@ func (t *tripHandler) durationToString(input time.Duration) (result string) {
 	return fmt.Sprintf("%02d:%02d:%02d.%03d", hours, minutes, seconds, milliseconds)
 }
 
+// ParseInput takes string with format `{location} {time(hh:mm:ss.fff)} {mileage} {fare}` and creates domain.Trip object
 func (t *tripHandler) ParseInput(input string) (result domain.Trip, err error) {
 	values := strings.Split(input, " ")
 
