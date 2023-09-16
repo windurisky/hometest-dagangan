@@ -25,7 +25,6 @@ func NewTripHandler(logger logger.Logger, tripUsecase domain.TripUsecase) domain
 
 // stringToDuration will convert string with hh:mm:ss.fff format into time.Duration
 func (t *tripHandler) stringToDuration(input string) (result time.Duration, err error) {
-
 	durationParts := strings.Split(input, ":")
 	if len(durationParts) != 3 {
 		err = domain.ErrInvalidDurationFormat
