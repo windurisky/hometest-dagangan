@@ -51,7 +51,15 @@ func (z *ZapLogger) Close() error {
 func (z *ZapLogger) genericArgsToFields(args ...interface{}) (fields []zap.Field) {
 	fields = make([]zap.Field, 0, len(args))
 	for i, arg := range args {
-		fields = append(fields, zap.Any("arg"+strconv.Itoa(i), arg))
+		// Check if arg is a map[string]interface{}
+		if keyValue, ok := arg.(map[string]interface{}); ok {
+			for key, value := range keyValue {
+				fields = append(fields, zap.Any(key, value))
+			}
+		} else {
+			// Otherwise generate the key by index, e.g.: arg0, arg1, and so on.
+			fields = append(fields, zap.Any("arg"+strconv.Itoa(i), arg))
+		}
 	}
 	return
 }

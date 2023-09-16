@@ -30,5 +30,11 @@ func (t *tripUsecase) CalculateFare(mileage uint64) (result uint64, err error) {
 
 	result = fareConfig.FarePerMileage * mileage
 
+	logFields := map[string]interface{}{
+		"mileage":            mileage,
+		"fare_configuration": fareConfig,
+		"fare_amount":        result,
+	}
+	t.logger.Info("Successfully calculated fare", logFields)
 	return
 }

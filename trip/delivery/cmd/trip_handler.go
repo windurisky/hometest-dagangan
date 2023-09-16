@@ -112,6 +112,12 @@ func (t *tripHandler) ParseInput(input string) (result domain.Trip, err error) {
 	result.Duration = duration
 	result.Mileage, err = strconv.ParseUint(values[2], 10, 64)
 
+	logFields := map[string]interface{}{
+		"input":  input,
+		"result": result,
+	}
+	t.logger.Info("Successfully parsed input", logFields)
+
 	return
 }
 
