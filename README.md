@@ -38,7 +38,7 @@ Total Duration: 00:22:15.000
 
 ## Architecture
 
-Clean architecture based on https://github.com/bxcodec/go-clean-arch which also kept Domain-Driven Design in mind.
+Clean architecture based on https://github.com/bxcodec/go-clean-arch which also kept Domain-Driven Design (DDD) in mind.
 
 ## Language
 
@@ -48,3 +48,11 @@ Golang v1.20
 
 - github.com/joho/godotenv
 - go.uber.org/zap
+
+## Decision Making
+
+- Since the clean architecture reference here is leaning more to DDD, then I started by defining the domains first. The action of `a driver delivering packages from a warehouse to various locations` is named as `Trip`, and the fare calculation rule is named as `Fare Configuration`. The interfaces of the domain's handler, usecase, and repository are also defined in each of its respective domain file.
+- Trip has usecase and handler. Main.go is directly communicating with handler, and then usecase will be called by the handler.
+- Fare Configuration resembles a structured data source, so in this case I added a repository with a hardcoded json file. When the requirements complexity of the configuration increases, we can later move it into a database table. Fare Configuration repository will be called by Trip usecase
+- For logging, I am using Zap because it is one of the most popular structured logging library for Go that has many customizable options. I defined an abstraction for logging by using interface. It is so that we can decouple logging library choice with implementation, resulting in ease if we ever want to change it to something else later on.
+- For configurable environment variable, I am using godotenv since it is also one of the most common library for env in Go. I used it to define lower and upper limit of the duration validation, since it looks like a config that should be easily modified later on.
