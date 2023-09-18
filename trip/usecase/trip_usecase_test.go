@@ -12,7 +12,6 @@ import (
 )
 
 func TestCalculateFare(t *testing.T) {
-	// table-driven approach
 	testCases := []struct {
 		name                             string
 		mileage                          uint64
@@ -63,13 +62,15 @@ func TestCalculateFare(t *testing.T) {
 			mockFareConfigUsecase := new(mocks.FareConfigurationUsecase)
 			tripUsecase := _tripUsecase.NewTripUsecase(mockLogger, mockFareConfigUsecase)
 
-			// Set up mock expectations
+			// set up mock expectations
 			tc.mockLoggerExpectation(mockLogger)
 			tc.mockFareConfigUsecaseExpectation(mockFareConfigUsecase)
 
+			// execute the function
 			result, err := tripUsecase.CalculateFare(tc.mileage)
 
-			// Assert the results
+			// assert the results
+			mockLogger.AssertExpectations(t)
 			mockFareConfigUsecase.AssertExpectations(t)
 			assert.Equal(t, tc.expectedError, err)
 			assert.Equal(t, tc.expectedFare, result)
