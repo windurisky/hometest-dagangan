@@ -83,7 +83,7 @@ func (t *tripHandler) stringToDuration(input string) (result time.Duration, err 
 		time.Duration(seconds)*time.Second +
 		time.Duration(milliseconds)*time.Millisecond
 
-	lowerLimit, err := strconv.Atoi(util.GetEnvWithDefault("DURATION_UPPER_LIMIT_MINUTES", "2"))
+	lowerLimit, err := strconv.Atoi(util.GetEnvWithDefault("DURATION_LOWER_LIMIT_MINUTES", "2"))
 	if err != nil {
 		t.logger.Error(err.Error())
 		return
@@ -91,7 +91,7 @@ func (t *tripHandler) stringToDuration(input string) (result time.Duration, err 
 
 	lowerLimitDuration := time.Duration(lowerLimit) * time.Minute
 
-	upperLimit, err := strconv.Atoi(util.GetEnvWithDefault("DURATION_LOWER_LIMIT_MINUTES", "10"))
+	upperLimit, err := strconv.Atoi(util.GetEnvWithDefault("DURATION_UPPER_LIMIT_MINUTES", "10"))
 	if err != nil {
 		t.logger.Error(err.Error())
 		return
