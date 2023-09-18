@@ -1,8 +1,6 @@
 package usecase
 
 import (
-	"path/filepath"
-
 	"github.com/windurisky/hometest-dagangan/domain"
 	"github.com/windurisky/hometest-dagangan/logger"
 )
@@ -21,9 +19,10 @@ func NewFareConfigurationUsecase(logger logger.Logger, fcRepo domain.FareConfigu
 
 func (fc *fareConfigurationUsecase) FindByMileage(mileage uint64) (result domain.FareConfiguration, err error) {
 	relativePath := "fare_configuration/fixtures/fare_configuration.json"
-	absolutePath, _ := filepath.Abs(relativePath)
-	fareConfigurations, err := fc.fareConfigurationRepo.GetAll(absolutePath)
+
+	fareConfigurations, err := fc.fareConfigurationRepo.GetAll(relativePath)
 	if err != nil {
+		fc.logger.Error(err.Error())
 		return
 	}
 
