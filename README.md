@@ -38,21 +38,49 @@ Total Duration: 00:22:15.000
 
 ## Architecture
 
-Clean architecture based on https://github.com/bxcodec/go-clean-arch which also kept Domain-Driven Design (DDD) in mind.
+This repository adheres to a clean architecture pattern, heavily influenced by [bxcodec/go-clean-arch](https://github.com/bxcodec/go-clean-arch) and designed with a strong focus on Domain-Driven Design (DDD).
 
 ## Language
 
-Golang v1.20
+The primary programming language used in this project is Golang v1.20.
 
 ## External Libraries
 
-- github.com/joho/godotenv
-- go.uber.org/zap
+The following external libraries are utilized to enhance this project:
+
+- [github.com/joho/godotenv](https://github.com/joho/godotenv): Used for efficient management of environment variables.
+- [go.uber.org/zap](https://pkg.go.dev/go.uber.org/zap): A robust and highly customizable structured logging library for Go.
+- [github.com/vektra/mockery](https://github.com/vektra/mockery): I have downloaded the binary file for `mockery` and placed it in the `./bin` folder. `mockery` is employed to generate mock interfaces, accelerating the creation of unit tests.
+- [github.com/stretchr/testify](https://github.com/stretchr/testify): This library serves as a dependency for `mockery`.
 
 ## Decision Making
 
-- Since the clean architecture reference here is leaning more to DDD, then I started by defining the domains first. The action of `a driver delivering packages from a warehouse to various locations` is named as `Trip`, and the fare calculation rule is named as `Fare Configuration`. The interfaces of the domain's handler, usecase, and repository are also defined in each of its respective domain file.
-- Trip has usecase and handler. Main.go is directly communicating with handler, and then usecase will be called by the handler.
-- Fare Configuration resembles a structured data source, so in this case I added a repository with a hardcoded json file. When the requirements complexity of the configuration increases, we can later move it into a database table. Fare Configuration repository will be called by Trip usecase
-- For logging, I am using Zap because it is one of the most popular structured logging library for Go that has many customizable options. I defined an abstraction for logging by using interface. It is so that we can decouple logging library choice with implementation, resulting in ease if we ever want to change it to something else later on.
-- For configurable environment variable, I am using godotenv since it is also one of the most common library for env in Go. I used it to define lower and upper limit of the duration validation, since it looks like a config that should be easily modified later on.
+Here's a breakdown of the key decisions made during the design and development process:
+
+- **Domain-Driven Design (DDD):** I began by defining our domains, including `Trip` for package delivery and `Fare Configuration` for fare calculation. Each domain includes interfaces for handlers, use cases, and repositories.
+
+- **Trip Domain:** Within the `Trip` domain, I've organized both use cases and handlers. `main.go` communicates directly with the handler, which subsequently invokes the use cases.
+
+- **Fare Configuration:** This domain resembles structured data, so I have implemented a repository with a hardcoded JSON file. In case the complexity of configuration requirements grows, we retain the flexibility to transition to a database table. The Trip use case interfaces with the Fare Configuration repository.
+
+- **Logging with Zap:** I've selected Zap for logging because it's a highly popular structured logging library for Go, offering extensive customization options. I also abstracted logging through interfaces, enabling seamless switching to an alternative logging library in the future without altering the implementation.
+
+- **Environment Variables with godotenv:** To manage configurable environment variables, I chose `godotenv`, a common library for handling environmental configurations. I've used it to define upper and lower limits for duration validation, ensuring ease of configuration adjustments.
+
+- **Unit Testing with mockery:** For a more time efficient unit test creation, we rely on `mockery` to generate interfaces for mock objects, simplifying the unit testing process.
+
+## How to Run
+
+To run the project, follow these steps:
+
+1. Set up a development environment with Golang v1.20.
+
+   > **Note:** For a hassle-free setup, consider using [Github Codespace](https://github.com/codespaces). Simply fork [my repository](https://github.com/windurisky/hometest-dagangan) and click the `<> Code` button to run it in Codespace. The setup will be automated.
+
+2. Generate an `.env` file by running `cp env.sample .env`.
+
+3. Utilize the `Makefile` for simplified operations. To run the project, execute `make run`.
+
+4. For unit testing, you have the options of running `make test` or `make test_cover`.
+
+Feel free to reach out if you have any questions or require further assistance with this project.
