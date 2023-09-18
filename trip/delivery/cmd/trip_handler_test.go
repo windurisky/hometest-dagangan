@@ -13,7 +13,6 @@ import (
 )
 
 func TestParseInput(t *testing.T) {
-
 	testCases := []struct {
 		name                  string
 		input                 string
@@ -203,41 +202,98 @@ func TestParseInput(t *testing.T) {
 			mockLogger.AssertExpectations(t)
 			if tc.expectedError != nil {
 				assert.Equal(t, tc.expectedError.Error(), err.Error())
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, tc.expectedTrip, result)
 			}
-			assert.Equal(t, tc.expectedTrip, result)
 		})
 	}
 }
 
 func TestSummarizeTrip(t *testing.T) {
-	mockLogger := new(mocks.Logger)
-	mockTripUsecase := new(mocks.TripUsecase)
-
-	// Create a tripHandler instance with the mock logger and tripUsecase
-	handler := _triphandler.NewTripHandler(mockLogger, mockTripUsecase)
-
-	testTrips := []domain.Trip{
+	testCases := []struct {
+		name                   string
+		trips                  []domain.Trip
+		expectedError          error
+		mockCalculateFareError error
+		mockLoggerExpectation  func(mockLogger *mocks.Logger)
+	}{
 		{
-			Location: "Location1",
-			Duration: 1 * time.Hour,
-			Mileage:  10,
+			name: "Valid Trips",
+			trips: []domain.Trip{
+				{
+					Location: "Location1",
+					Duration: 1 * time.Hour,
+					Mileage:  10,
+				},
+				{
+					Location: "Location2",
+					Duration: 2 * time.Hour,
+					Mileage:  20,
+				},
+			},
+			mockLoggerExpectation: func(mockLogger *mocks.Logger) {
+				mockLogger.On("Info", "Successfully summarized trips", mock.Anything).Return()
+			},
 		},
 		{
-			Location: "Location2",
-			Duration: 2 * time.Hour,
-			Mileage:  20,
+			name: "Zero Total Mileage",
+			trips: []domain.Trip{
+				{
+					Location: "Location1",
+					Duration: 1 * time.Hour,
+					Mileage:  0,
+				},
+			},
+			expectedError: domain.ErrInvalidTotalMileage,
+			mockLoggerExpectation: func(mockLogger *mocks.Logger) {
+				mockLogger.On("Error", domain.ErrInvalidTotalMileage.Error()).Return()
+			},
+		},
+		{
+			name: "Fail CalculateFare",
+			trips: []domain.Trip{
+				{
+					Location: "Location1",
+					Duration: 1 * time.Hour,
+					Mileage:  10,
+				},
+			},
+			expectedError:          domain.ErrFareConfigurationNotFound,
+			mockCalculateFareError: domain.ErrFareConfigurationNotFound,
+			mockLoggerExpectation: func(mockLogger *mocks.Logger) {
+				mockLogger.On("Error", domain.ErrFareConfigurationNotFound.Error()).Return()
+			},
 		},
 	}
 
-	// set up mock expectations
-	for _, trip := range testTrips {
-		mockTripUsecase.On("CalculateFare", trip.Mileage).Return(uint64(0), nil)
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			mockLogger := new(mocks.Logger)
+			mockTripUsecase := new(mocks.TripUsecase)
+
+			handler := _triphandler.NewTripHandler(mockLogger, mockTripUsecase)
+
+			// set up mock expectations
+			tc.mockLoggerExpectation(mockLogger)
+			if tc.mockCalculateFareError != nil {
+				mockTripUsecase.On("CalculateFare", mock.Anything).Return(uint64(0), tc.mockCalculateFareError)
+			} else {
+				for _, trip := range tc.trips {
+					mockTripUsecase.On("CalculateFare", trip.Mileage).Return(uint64(0), nil)
+				}
+			}
+
+			// execute the function
+			err := handler.SummarizeTrip(tc.trips)
+
+			// assert the error result
+			if tc.expectedError != nil {
+				assert.Equal(t, tc.expectedError.Error(), err.Error())
+			} else {
+				assert.NoError(t, err)
+				mockTripUsecase.AssertNumberOfCalls(t, "CalculateFare", len(tc.trips))
+			}
+		})
 	}
-
-	// execute the function
-	err := handler.SummarizeTrip(testTrips)
-
-	// assert the error result
-	assert.NoError(t, err)
-	mockTripUsecase.AssertNumberOfCalls(t, "CalculateFare", len(testTrips))
 }

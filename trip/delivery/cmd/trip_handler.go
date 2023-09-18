@@ -177,5 +177,9 @@ func (t *tripHandler) SummarizeTrip(trips []domain.Trip) (err error) {
 	fmt.Println("Total Mileage:", totalMileAge, "km")
 	fmt.Println("Total Fare Amount: Rp", totalFareAmount)
 	fmt.Println("Total Duration:", t.durationToString(totalDuration))
+
+	logFields := map[string]interface{}{"input": trips}
+	t.logger.Info("Successfully summarized trips", logFields)
+
 	return
 }
