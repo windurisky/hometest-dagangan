@@ -133,6 +133,7 @@ func (t *tripHandler) ParseInput(input string) (result domain.Trip, err error) {
 
 	duration, err := t.stringToDuration(values[1])
 	if err != nil {
+		t.logger.Error(err.Error())
 		return
 	}
 
@@ -157,6 +158,7 @@ func (t *tripHandler) SummarizeTrip(trips []domain.Trip) (err error) {
 	for _, trip := range trips {
 		fareAmount, err := t.tripUsecase.CalculateFare(trip.Mileage)
 		if err != nil {
+			t.logger.Error(err.Error())
 			return err
 		}
 
