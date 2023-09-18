@@ -1,4 +1,7 @@
-build:
+tidy:
+	go mod tidy
+
+build: tidy
 	go build -o ./app/cmd ./app
 
 run: clean build
