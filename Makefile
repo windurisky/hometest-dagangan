@@ -1,11 +1,14 @@
 build:
-	go build -o cmd ./app
+	go build -o ./app/cmd ./app
 
 run: clean build
-	./cmd
+	./app/cmd
 
 test:
 	go test ./...
 
+test_cover:
+	go test -cover ./...
+
 clean:
-	rm -f cmd
+	rm -f ./app/cmd
